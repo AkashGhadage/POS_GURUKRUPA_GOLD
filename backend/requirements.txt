@@ -1,0 +1,51 @@
+# Essential web backend
+fastapi==0.119.0
+uvicorn==0.37.0
+sqlmodel==0.0.27
+SQLAlchemy==2.0.44
+starlette==0.48.0
+
+# Data/models
+pydantic==2.12.1
+pydantic_core==2.41.3
+
+# Database & file utils
+python-dotenv==1.1.1
+
+# Receipt rendering & ESC/POS printing
+python-escpos==3.1
+pillow==12.0.0
+qrcode==8.2
+python-barcode==0.16.1
+pyusb==1.3.1
+
+# Web API utilities
+httpx==0.28.1
+anyio==4.11.0
+typing-inspection==0.4.2
+typing_extensions==4.15.0
+
+# Extra tools
+email-validator==2.3.0
+Jinja2==3.1.6
+MarkupSafe==3.0.3
+
+# CLI and helpers (keep if you use fastapi-cli, rich output, etc.)
+click==8.3.0
+rich==14.2.0
+typer==0.19.2
+
+# Other dependencies (if directly used in your code)
+greenlet==3.2.4
+
+# Remove these if not directly used, or add as needed:
+certifi==2025.10.5
+websockets==15.0.1
+watchfiles==1.1.1
+
+# (Optional) Only keep testing, Sentry, markdown, and dev tools if actually needed:
+# fastapi-cli==0.0.13
+# fastapi-cloud-cli==0.3.1
+# sentry-sdk==2.41.0
+# markdown-it-py==4.0.0
+# Pygments==2.19.2

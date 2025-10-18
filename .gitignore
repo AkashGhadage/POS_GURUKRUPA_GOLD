@@ -1,0 +1,75 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# ======================
+# Node & React Frontend
+# ======================
+
+# dependencies
+node_modules/
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# production
+/build
+
+# misc frontend
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =====================
+# Python Backend
+# =====================
+
+# Bytecode, caches, environments
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Database, generated, and binary files
+*.db
+*.bin
+
+# Virtual environment
+.venv/
+env/
+ENV/
+
+# Python test/output/log files (just in case)
+*.log
+
+# =====================
+# Project-wide
+# =====================
+
+# System files (macOS/Windows)
+.DS_Store
+Thumbs.db
+
+# Generated/temporary assets (move if you want versions)
+receipt_rendered.png
+test_receipt_escpos.bin
+
+# Editor/IDE settings
+.vscode/
+.idea/
+
+# Documentation or assets (if not meant for versioning)
+/assets/
+docs/
+
+# Optional: backup/swap files (Emacs/Vim/etc)
+*~
+*.swp
+
