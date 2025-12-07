@@ -34,6 +34,7 @@ export default function EntryForm({ onSuccess }) {
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
+
   function handleSampleTypeChange(event, newValue) {
     setForm({ ...form, SampleType: newValue || '' });
   }
@@ -67,11 +68,13 @@ export default function EntryForm({ onSuccess }) {
       CustomerMobile: form.CustomerMobile || "",
       SampleWeight: Number(form.SampleWeight),
       SampleType: form.SampleType,
+      // Touch/Karat defaulted to 0 on create; edited later in EditDialog
       TouchValue: form.TouchValue === '' ? 0 : Number(form.TouchValue),
       KaratValue: form.KaratValue === '' ? 0 : Number(form.KaratValue),
       TestingMethod: form.TestingMethod,
       Remark: form.Remark,
     };
+
     try {
       const res = await fetch('http://localhost:8000/entries', {
         method: 'POST',
@@ -143,7 +146,7 @@ export default function EntryForm({ onSuccess }) {
           fullWidth
           required
           type="number"
-          inputProps={{ step: "0.000001", min: "0.000001" }}
+          inputProps={{ step: "0.001", min: "0.001" }}
           value={form.SampleWeight}
           onChange={handleChange}
           size="small"
@@ -182,28 +185,6 @@ export default function EntryForm({ onSuccess }) {
             ))}
           </Select>
         </FormControl>
-        <TextField
-          label="Touch Value"
-          name="TouchValue"
-          fullWidth
-          type="number"
-          inputProps={{ step: "0.01", min: "0" }}
-          value={form.TouchValue}
-          onChange={handleChange}
-          size="small"
-          sx={fieldMargin}
-        />
-        <TextField
-          label="Karat Value"
-          name="KaratValue"
-          fullWidth
-          type="number"
-          inputProps={{ step: "0.01", min: "0" }}
-          value={form.KaratValue}
-          onChange={handleChange}
-          size="small"
-          sx={fieldMargin}
-        />
         <TextField
           label="Remark"
           name="Remark"

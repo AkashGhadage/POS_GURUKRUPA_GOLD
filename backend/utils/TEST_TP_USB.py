@@ -173,4 +173,35 @@ def do_print_receipt(entry, copies):
         }
 
     except Exception as e:
+        print(f"Error during printing: {e}")
+
         return {"status": "error", "message": f"Print failed: {e}"}
+
+
+# def test_print_receipt():
+#     """
+#     Local test helper.
+#     Run this file directly to print a sample receipt
+#     (or generate dummy ESC/POS output when PRINTER_TYPE = 'DUMMY').
+#     """
+#     sample_entry = {
+#         "TransactionID": 13,
+#         "TransactionDate": "2025-11-15T17:40:10.203873",
+#         "TestedOn": "2025-11-15T17:49:39.730470",
+#         "CustomerName": "Amit Gupta",
+#         "CustomerMobile": "",
+#         "SampleWeight": 18.3,
+#         "SampleType": "Gold",
+#         "TouchValue": 85.6,
+#         "KaratValue": 22,
+#         "TestingMethod": "Without Print",
+#         "Remark": "",
+#     }
+#     copies = 3
+#     result = do_print_receipt(sample_entry, copies)
+#     print("Print result:", result)
+
+
+# if __name__ == "__main__":
+#     # Run: python printer_escpos.py
+#     test_print_receipt()
