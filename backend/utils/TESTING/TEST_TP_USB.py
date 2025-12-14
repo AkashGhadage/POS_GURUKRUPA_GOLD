@@ -254,3 +254,27 @@ def do_print_receipt(entry: dict, copies: int):
     except Exception as e:
         logging.exception(f"An unexpected error occurred: {e}")
         return {"status": "error", "message": f"An unexpected error occurred: {e}"} # Ensure function always returns
+
+
+# ---------------------------------------------------------------------
+# ✅ LOCAL TESTING (SAFE)
+# ---------------------------------------------------------------------
+
+def test_print_receipt():
+    sample_entry = {
+        "TransactionID": 13,
+        "TransactionDate": "2025-11-15T17:40:10.203873",
+        "CustomerName": "Amit Gupta",
+        "CustomerMobile": "",
+        "SampleWeight": 18.3,
+        "SampleType": "Gold",
+        "TouchValue": 85.6,
+        "KaratValue": 22,
+        "Remark": "",
+    }
+
+    result = do_print_receipt(sample_entry, 2)
+    print("Print result:", result)
+
+if __name__ == "__main__":
+    test_print_receipt()

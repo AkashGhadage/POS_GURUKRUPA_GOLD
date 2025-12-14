@@ -280,16 +280,16 @@ export default function EntryTable({ refreshFlag, onCreateClick }) {
   // Print dialog open/setup
   function handlePrintSetup(row) {
     // Block printing if tunch (TouchValue) is 0 or not set
-    const tunch = Number(row.TouchValue);
+    // const tunch = Number(row.TouchValue);
 
-    if (!Number.isFinite(tunch) || tunch === 0) {
-      setMessageDialog({
-        open: true,
-        type: 'error',
-        text: 'Please enter Tunch before printing.'
-      });
-      return; // Do not open print dialog
-    }
+    // if (!Number.isFinite(tunch) || tunch === 0) {
+    //   setMessageDialog({
+    //     open: true,
+    //     type: 'error',
+    //     text: 'Please enter Tunch before printing.'
+    //   });
+    //   return; // Do not open print dialog
+    // }
 
     // OK to print
     setPrintEntry(row);
