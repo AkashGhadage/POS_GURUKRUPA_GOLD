@@ -6,6 +6,7 @@ import logging
 import os
 from PIL import Image
 from datetime import datetime
+from pathlib import Path
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -16,8 +17,9 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 PRINTER_TYPE = "USB"
 
 # Manually resized logo path
-LOGO_PATH = r"C:\Users\Akash\pos_gurukrupa_gold\backend\utils\Images\GURUKRUPA_header_RS_560.png"
-LOGO_PATH = r"C:\Users\Akash\pos_gurukrupa_gold\backend\utils\Images\GURUKRUPA_H_A_M_RS_CROP_560.png"
+
+BASE_DIR = Path(__file__).resolve().parent   # -> ...\backend\utils
+LOGO_PATH = BASE_DIR / "Images" / "GURUKRUPA_H_A_M_RS_CROP_560.png"
 
 USB_PRINTER_ARGS = {
     "idVendor": 0x0483,
