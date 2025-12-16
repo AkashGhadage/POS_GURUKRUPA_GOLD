@@ -226,7 +226,7 @@ def do_print_receipt(entry: dict, copies: int):
                     _print_table_row(printer, "Weight", weight_str + " gm")
                 if touch_str and Decimal(touch_str) != Decimal('0'):
                         printer.set(bold=True)
-                        _print_table_row(printer, "Tunch", touch_str)
+                        _print_table_row(printer, "Tunch", touch_str + " %")
                         printer.set(bold=False)
                 # if karat_str or karat_str == "0":
                 #     _print_table_row(printer, "Karat", karat_str + "K")
