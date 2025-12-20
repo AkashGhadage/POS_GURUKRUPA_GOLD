@@ -187,7 +187,7 @@ def do_print_receipt(entry: dict, copies: int):
                 try:
                     printer.set(align="center")
                     printer.image(LOGO_PATH)
-                    printer.ln()
+                    # printer.ln()
                 except FileNotFoundError:
                     logging.warning("Logo file not found. Skipping image print.")
                 except Exception as e:
