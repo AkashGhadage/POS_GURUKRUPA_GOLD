@@ -21,7 +21,7 @@ PRINTER_TYPE = "USB"
 # Manually resized logo path
 
 BASE_DIR = Path(__file__).resolve().parent   # -> ...\backend\utils
-LOGO_PATH = BASE_DIR / "Images" / "GURUKRUPA_H_A_M_RS_CROP_560.png"
+LOGO_PATH = BASE_DIR / "Images" / "GURUKRUPA_H_A_M_RS_CROP_560_238.png"
 
 USB_PRINTER_ARGS = {
     "idVendor": 0x0483,
@@ -100,16 +100,14 @@ def _print_table_row(printer, label, value, width_label=12, width_value=34):
     """
     FIXED: Ensures the colon is included and the label is consistently padded.
     """
-    # Ensure the label (including colon) has a fixed width
-    label_field = f"{label.rstrip(':')} " 
+    label_field = f"{label.rstrip(':')} "
     label_padded = f"{label_field:<{width_label}}"
     value = f": {value}"
     display_value = str(value)[:width_value]
     line = f"{label_padded}{display_value}\n"
     printer.text(line)
 
-
-# Two-column helper for Date (left) and Time (right) on same line
+# Two-column helper
 def _print_two_cols(printer, left_text, right_text, total_width=48):
     left = str(left_text)
     right = str(right_text)
@@ -118,34 +116,29 @@ def _print_two_cols(printer, left_text, right_text, total_width=48):
         max_right = max(0, inner_width - len(left))
         right = right[:max_right]
     spaces = inner_width - len(left) - len(right)
-    line = left + (" " * spaces) + right + "\n"
+    line = left + (" " * spaces) + right 
     printer.text(line)
 
-# Add this new helper function to your HELPERS section:
-# _print_wrapped_row(printer, "Remark", remark, width_label=15)
-                    
 def _print_wrapped_row(printer, label, value, width_label=15, total_width=48):
     """
     Handles long text wrapping for fields like 'Remark'.
     Subsequent lines are indented to align under the start of the value text.
     """
     import textwrap
-    
+
     label_text = f"{label.rstrip(':')}"
-    value = f': {value}'
-    # Calculate the indent for the wrapped lines (must match the length of the label text)
+    value = f": {value}"
     indent_length = len(label_text)
-    
-    # Python's textwrap does the heavy lifting
+
     wrapped_lines = textwrap.fill(
         str(value),
         width=total_width,
-        initial_indent=label_text + " ", # Starts with "Remark: "
-        subsequent_indent=" " * (indent_length + 1) # Indents subsequent lines
+        initial_indent=label_text + " ",
+        subsequent_indent=" " * (indent_length + 1)
     )
-    
-    printer.text(wrapped_lines + "\n")
-    
+
+    printer.text(wrapped_lines)
+
 # ---------------------------------------------------------------------
 # ✅ MAIN PRINT FUNCTION
 # ---------------------------------------------------------------------
@@ -155,68 +148,65 @@ def do_print_receipt(entry: dict, copies: int):
 
     try:
         with PrinterContextManager() as printer:
-            
+
             # Initialize hardware safely (only if method exists)
-            if hasattr(printer, "hw"): 
+            if hasattr(printer, "hw"):
                 printer.hw("init")
-                
+
             date_raw = entry.get("TransactionDate", "") or ""
             date_str = ""
             time_str = ""
             if date_raw:
                 try:
-                    # Parse the input string into a datetime object
                     dt_object = datetime.strptime(date_raw, "%Y-%m-%dT%H:%M:%S.%f")
-                    
-                    # Format the datetime object into the desired output strings
-                    date_str = dt_object.strftime("%d-%m-%Y") # DD-MM-YYYY
-                    time_str = dt_object.strftime("%H:%M")   # HH:MM
-                    
+                    date_str = dt_object.strftime("%d-%m-%Y")  # DD-MM-YYYY
+                    time_str = dt_object.strftime("%H:%M")     # HH:MM
                 except ValueError as e:
                     logging.error(f"Error parsing date format: {e}")
+
             weight_str = _fmt_decimal(entry.get("SampleWeight"), 3)
             touch_str = _fmt_decimal(entry.get("TouchValue"), 2)
             karat_str = _fmt_decimal(entry.get("KaratValue"), 2)
-            customer_name = entry.get('CustomerName', '') or ''
-            customer_mobile = entry.get('CustomerMobile', '') or ''
-            sample_type = entry.get('SampleType', '') or ''
+            customer_name = entry.get("CustomerName", "") or ""
+            customer_mobile = entry.get("CustomerMobile", "") or ""
+            sample_type = entry.get("SampleType", "") or ""
             remark = entry.get("Remark", "") or ""
-            transaction_id = entry.get('TransactionID', '') or ''
+            transaction_id = entry.get("TransactionID", "") or ""
 
             for _ in range(num_copies):
                 # Logo
                 try:
                     printer.set(align="center")
                     printer.image(LOGO_PATH)
-                    # printer.ln()
                 except FileNotFoundError:
                     logging.warning("Logo file not found. Skipping image print.")
                 except Exception as e:
                     logging.error(f"Failed to print image: {e}")
 
-                # (Text headings are commented out as per your last code version)
-                printer.text("-" * 48 + "\n")
+                printer.text("-" * 48)
 
                 # Tunch Receipt heading
                 printer.set(align="center", bold=True, width=2, height=2)
-                printer.text("TUNCH RECEIPT\n")
+                printer.text("TUNCH RECEIPT")
                 printer.set(align="center", bold=False, width=1, height=1)
-                printer.text("-" * 48 + "\n")
+                printer.text("-" * 48)
 
-                # Receipt info: Date (left) and Time (right) on same line
+                # Combined line: Receipt No (left) and Date/Time (right)
                 printer.set(align="left", bold=False)
 
-                date_part = f"Date: {date_str}" if date_str else ""
-                time_part = f"Time: {time_str}" if time_str else ""
-
-                if date_part or time_part:
-                    _print_two_cols(printer, date_part, time_part)
-
+                left_text = ""
                 if transaction_id:
-                    printer.set(bold=True)
-                    _print_table_row(printer, "Receipt No", transaction_id)
-                    printer.set(bold=False)
-                printer.text("-" * 48 + "\n")
+                    left_text = f"Receipt No: {transaction_id}"
+
+                right_text = ""
+                if date_str or time_str:
+                    dt_display = " ".join(x for x in [date_str, time_str] if x)
+                    right_text = f"Date: {dt_display}"
+
+                if left_text or right_text:
+                    _print_two_cols(printer, left_text, right_text, total_width=48)
+
+                printer.text("-" * 48)
 
                 # Customer and sample details
                 if customer_name:
@@ -227,26 +217,29 @@ def do_print_receipt(entry: dict, copies: int):
                     _print_table_row(printer, "Sample", sample_type)
                 if weight_str:
                     _print_table_row(printer, "Weight", weight_str + " gm")
-                if touch_str and Decimal(touch_str) != Decimal('0'):
-                        printer.set(bold=True)
-                        _print_table_row(printer, "Tunch", touch_str + " %")
-                        printer.set(bold=False)
+                if touch_str and Decimal(touch_str) != Decimal("0"):
+                    printer.set(bold=True)
+                    _print_table_row(printer, "Tunch", touch_str + " %")
+                    printer.set(bold=False)
                 # if karat_str or karat_str == "0":
                 #     _print_table_row(printer, "Karat", karat_str + "K")
 
                 if remark:
                     _print_wrapped_row(printer, "Remark", remark, width_label=15)
 
-                printer.text("-" * 48 + "\n")
+                printer.text("-" * 48)
 
                 # Footer
                 printer.set(align="center", bold=False)
-                printer.text("Note: Deviation in result may be ± 0.20%\n")
+                printer.text("Note: Deviation in result may be ± 0.20%")
                 printer.set(align="center", bold=True)
-                printer.text("Thank you...Visit Again..!\n")
-                # With
+                printer.text("Thank you...Visit Again..!")
+
+                # Cut without extra feed (if supported)
                 printer.cut(mode="FULL", feed=False)
-                # printer._raw(GS + b"V" + six.int2byte(66) + b"\x00")  # cut without feed
+                # If feed=False not supported in your version, comment the line above
+                # and uncomment this:
+                # printer._raw(GS + b"V" + six.int2byte(66) + b"\x00")
 
         return {
             "status": "success",
@@ -258,4 +251,4 @@ def do_print_receipt(entry: dict, copies: int):
         return {"status": "error", "message": f"Printer Error: {e}"}
     except Exception as e:
         logging.exception(f"An unexpected error occurred: {e}")
-        return {"status": "error", "message": f"An unexpected error occurred: {e}"} # Ensure function always returns
+        return {"status": "error", "message": f"An unexpected error occurred: {e}"}
