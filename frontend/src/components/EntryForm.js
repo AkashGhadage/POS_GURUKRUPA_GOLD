@@ -13,7 +13,7 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 
 const sampleTypeOptions = [
-  'Reni','Rava', 'Chas','Tukdi' ,'Bat','Langadi', 'Coin', 'Bar','Ring', 'Chain','Bangle', 'Pendant', 'Other'
+  'GOLD SAMPLE','SILVER SAMPLE',"GOLD ORNAMENT","SILVER ORNAMENT",'Reni','Rava', 'Chas','Coin', 'Bar','Ring', 'Chain','Bangle', 'Pendant', 'Other'
 ];
 const testingMethodOptions = ['With Print', 'Without Print'];
 

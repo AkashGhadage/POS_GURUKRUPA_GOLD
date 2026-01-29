@@ -4,9 +4,10 @@
 cd /d "C:\Users\HP\POS_GURUKRUPA_GOLD"
 call venv\Scripts\activate.bat
 
-:: 2. Start the FastAPI Backend
+:: 2. Start the FastAPI Backend using the Python module bypass
 cd /d "C:\Users\HP\POS_GURUKRUPA_GOLD\backend"
-start /b "" uvicorn main:app --reload
+:: We use 'python -m' to bypass the Application Control policy
+start /b "" python -m uvicorn main:app --reload
 
 :: 3. Start the React Frontend
 cd /d "C:\Users\HP\POS_GURUKRUPA_GOLD\frontend"
