@@ -28,18 +28,15 @@ export default function App() {
   const [formOpen, setFormOpen] = useState(false);
   const [refreshFlag, setRefreshFlag] = useState(Date.now());
 
-  // Snackbar (gold notification)
   const [snackOpen, setSnackOpen] = useState(false);
   const [snackMsg, setSnackMsg] = useState('');
 
   const handleFormSuccess = (entryId) => {
-  setFormOpen(false);
-  setRefreshFlag(Date.now());
-  setSnackMsg(entryId ? `Entry created successfully! SR. No: ${entryId}` : 'Entry created successfully!');
-  setSnackOpen(true);
-};
- 
-
+    setFormOpen(false);
+    setRefreshFlag(Date.now());
+    setSnackMsg(entryId ? `Entry created successfully! SR. No: ${entryId}` : 'Entry created successfully!');
+    setSnackOpen(true);
+  };
 
   return (
     <ThemeProvider theme={getTheme()}>
@@ -59,43 +56,61 @@ export default function App() {
           onCreateClick={() => setFormOpen(true)}
         />
 
-        <Dialog open={formOpen} onClose={() => setFormOpen(false)} maxWidth="sm" fullWidth>
+        {/* CHANGE: maxWidth set to "lg" (1200px) to give the wide form space */}
+        <Dialog 
+          open={formOpen} 
+          onClose={() => setFormOpen(false)} 
+          maxWidth="md" 
+          fullWidth
+          PaperProps={{
+            sx: { borderRadius: 3 }
+          }}
+        >
           <DialogTitle
             sx={{
               fontWeight: 'bold',
               color: GOLD_PRIMARY,
-              background: "#fcf5e7"
+              background: "#fcf5e7",
+              px: 4 // More padding for the wide look
             }}
           >
             Create Entry
           </DialogTitle>
-          <DialogContent sx={{ pb: 1.5 }}>
+          <DialogContent sx={{ pb: 1.5, px: 4 }}>
+            {/* The wide form now has the full 1200px to spread out */}
             <EntryForm onSuccess={handleFormSuccess} />
           </DialogContent>
-          <DialogActions sx={{ pb: 2, pr: 2 }}>
-            <Button onClick={() => setFormOpen(false)}>Cancel</Button>
+          <DialogActions sx={{ pb: 3, pr: 4 }}>
+            <Button 
+              onClick={() => setFormOpen(false)} 
+              variant="outlined" 
+              sx={{ px: 4, borderRadius: 2 }}
+            >
+              Cancel
+            </Button>
           </DialogActions>
         </Dialog>
+
         <Snackbar
           open={snackOpen}
           autoHideDuration={2600}
           onClose={() => setSnackOpen(false)}
           anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-           sx={{
-              top: '50% !important',
-              transform: 'translateY(-50%)'
-            }}
+          sx={{
+            top: '50% !important',
+            transform: 'translateY(-50%)'
+          }}
         >
           <MuiAlert
             onClose={() => setSnackOpen(false)}
             severity="success"
             variant="filled"
             elevation={8}
-             sx={{
+            sx={{
               fontWeight: 700,
               fontSize: 18,
-              background: 'linear-gradient(90deg, #fffbe7 60%, #f7e3b4 100%)', // faded cream gold
-              color: '#7a6234', // soft gold-brown text
+              background: 'linear-gradient(90deg, #fffbe7 60%, #f7e3b4 100%)',
+              color: '#7a6234',
               letterSpacing: 1,
               boxShadow: '0 4px 32px #e6be7e22',
               borderRadius: 3,
@@ -105,6 +120,7 @@ export default function App() {
             {snackMsg}
           </MuiAlert>
         </Snackbar>
+        
         <style>{`
           @keyframes fadeIn {
             from { opacity: 0; transform: translateY(34px);}
