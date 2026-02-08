@@ -495,7 +495,7 @@ export default function EntryTable({ refreshFlag, onCreateClick }) {
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
           <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
             <Typography>Copies:</Typography>
-            {[1, 2, 3].map(n => (
+            {[1, 2, 3,4,5].map(n => (
               <Button key={n} size="small" variant={printCopies === n ? 'contained' : 'outlined'} onClick={() => setPrintCopies(n)}>{n}</Button>
             ))}
           </Box>
