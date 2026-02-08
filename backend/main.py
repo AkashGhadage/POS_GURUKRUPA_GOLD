@@ -74,36 +74,25 @@ def create_entry(data: TransactionCreate = Body(...)):
         except Exception as e:
             session.rollback()
             raise HTTPException(status_code=500, detail=str(e))
-
-# ---- READ ALL (Visits) ----
+# ---- READ ALL (Visits) - NESTED VERSION ----
 @app.get("/entries")
 def get_entries():
     with Session(engine) as session:
-        # Get all items joined with their headers
-        statement = select(GoldTestingItem, GoldTestingHeader).join(GoldTestingHeader)
-        results = session.exec(statement).all()
+        # Get all headers first (sorted by newest)
+        headers = session.exec(select(GoldTestingHeader).order_by(GoldTestingHeader.TransactionID.desc())).all()
         
         output = []
-        # Grouping items by TransactionID to calculate the -1, -2 suffix
-        group_counts = {}
-
-        for item, header in results:
-            tid = header.TransactionID
-            group_counts[tid] = group_counts.get(tid, 0) + 1
+        for header in headers:
+            # Get all items belonging to this specific header
+            items = session.exec(select(GoldTestingItem).where(GoldTestingItem.TransactionID == header.TransactionID)).all()
             
-            # Create a flat record for the frontend
-            record = {
-                **header.dict(),
-                **item.dict(),
-                "DisplayID": f"{tid}-{group_counts[tid]}",
-                "OriginalItemID": item.ItemID # Needed for specific edits
-            }
-            output.append(record)
+            # Convert header to dict and nest the items inside it
+            header_data = header.dict()
+            header_data["items"] = [item.dict() for item in items]
             
-        # Sort by TransactionID descending, then suffix ascending
-        output.sort(key=lambda x: (x['TransactionID'], x['DisplayID']), reverse=True)
+            output.append(header_data)
+            
         return output
-
 # ---- READ SINGLE (Full Visit Details) ----
 @app.get("/entries/{txn_id}")
 def get_entry(txn_id: int):
