@@ -331,11 +331,11 @@ export default function EntryTable({ refreshFlag, onCreateClick }) {
 
   const handleDialogSave = async (updatedEntry) => {
     try {
-      // NOTE: Ensure 'updatedEntry' contains the full object structure required by your backend
-      const res = await fetch(`http://localhost:8000/entries/${updatedEntry.TransactionID}`, {
+      // Use the new items endpoint to update individual items
+      const res = await fetch(`http://localhost:8000/entries/${updatedEntry.TransactionID}/items`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedEntry),
+        body: JSON.stringify({ items: updatedEntry.items }),
       });
 
       if (!res.ok) throw new Error('Update failed');
