@@ -8,12 +8,14 @@ import {
 const GOLD_PRIMARY = "#B78629";
 
 export default function EditDialog({ open, onClose, entry, onSave, loading }) {
-  // State for all items (each with TouchValue, Remark)
+  // State for all items (each with TouchValue)
   const [items, setItems] = useState([]);
+  // Transaction-level remark
+  const [remark, setRemark] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
-  // Sync items when entry changes
+  // Sync items and remark when entry changes
   useEffect(() => {
     if (entry && entry.items && entry.items.length > 0) {
       // Multi-item structure
@@ -21,20 +23,21 @@ export default function EditDialog({ open, onClose, entry, onSave, loading }) {
         ItemID: item.ItemID,
         SampleType: item.SampleType,
         SampleWeight: item.SampleWeight,
-        TouchValue: item.TouchValue ?? "",
-        Remark: item.Remark || ""
+        TouchValue: item.TouchValue ?? ""
       })));
+      setRemark(entry.Remark || "");
     } else if (entry) {
       // Fallback for legacy single-item structure
       setItems([{
         ItemID: entry.ItemID,
         SampleType: entry.SampleType,
         SampleWeight: entry.SampleWeight,
-        TouchValue: entry.TouchValue ?? "",
-        Remark: entry.Remark || ""
+        TouchValue: entry.TouchValue ?? ""
       }]);
+      setRemark(entry.Remark || "");
     } else {
       setItems([]);
+      setRemark("");
     }
   }, [entry]);
 
@@ -79,15 +82,15 @@ export default function EditDialog({ open, onClose, entry, onSave, loading }) {
     }
     setError("");
 
-    // Build payload with updated items
+    // Build payload with updated items and transaction-level remark
     const updatedEntry = {
       ...entry,
+      Remark: remark,
       items: items.map(item => ({
         ItemID: item.ItemID,
         SampleType: item.SampleType,
         SampleWeight: item.SampleWeight,
-        TouchValue: Number(item.TouchValue) || 0,
-        Remark: item.Remark
+        TouchValue: Number(item.TouchValue) || 0
       }))
     };
 
@@ -166,16 +169,22 @@ export default function EditDialog({ open, onClose, entry, onSave, loading }) {
                       placeholder="0.00"
                       helperText="Max 2 decimals"
                     />
-                    <TextField
-                      label="Remark"
-                      value={item.Remark}
-                      onChange={e => handleItemChange(index, 'Remark', e.target.value)}
-                      size="small"
-                      sx={{ flex: 1, minWidth: 150 }}
-                    />
                   </Box>
                 </Paper>
               ))}
+
+              <Divider sx={{ my: 1 }} />
+
+              {/* Transaction Remark */}
+              <TextField
+                label="Remark (for this transaction)"
+                value={remark}
+                onChange={e => setRemark(e.target.value)}
+                size="small"
+                fullWidth
+                multiline
+                rows={2}
+              />
 
               {error && <Typography color="error" fontSize={13}>{error}</Typography>}
             </Stack>

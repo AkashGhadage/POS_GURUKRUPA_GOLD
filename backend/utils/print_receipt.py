@@ -204,7 +204,6 @@ def do_print_receipt(entry: dict, copies: int):
                     sample_type = item.get("SampleType", "") or ""
                     weight_str = _fmt_decimal(item.get("SampleWeight"), 3)
                     touch_str = _fmt_decimal(item.get("TouchValue"), 2)
-                    remark = item.get("Remark", "") or ""
                     
                     # Item header (only show item number if multiple items)
                     if len(items) > 1:
@@ -220,14 +219,18 @@ def do_print_receipt(entry: dict, copies: int):
                         printer.set(bold=True)
                         _print_table_row(printer, "Tunch", touch_str + " %")
                         printer.set(bold=False)
-                    if remark:
-                        _print_wrapped_row(printer, "Remark", remark, width_label=15)
                     
                     # Separator between items (except last)
                     if len(items) > 1 and idx < len(items):
                         printer.text("- - - - - - - - - - - - - - - - - - - - - - - -\n")
 
                 printer.text("-" * 48 + "\n")
+                
+                # Print transaction-level remark
+                remark = entry.get("Remark", "") or ""
+                if remark:
+                    _print_wrapped_row(printer, "Remark", remark, width_label=15)
+                    printer.text("-" * 48 + "\n")
 
                 # Footer – no newline after last line
                 printer.set(align="center", bold=False)

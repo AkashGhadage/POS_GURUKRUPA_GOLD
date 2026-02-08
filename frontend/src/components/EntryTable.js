@@ -336,11 +336,14 @@ export default function EntryTable({ refreshFlag, onCreateClick }) {
 
   const handleDialogSave = async (updatedEntry) => {
     try {
-      // Use the new items endpoint to update individual items
+      // Use the items endpoint to update items and transaction-level remark
       const res = await fetch(`http://localhost:8000/entries/${updatedEntry.TransactionID}/items`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items: updatedEntry.items }),
+        body: JSON.stringify({ 
+          items: updatedEntry.items,
+          Remark: updatedEntry.Remark  // Transaction-level remark
+        }),
       });
 
       if (!res.ok) throw new Error('Update failed');
