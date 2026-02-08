@@ -84,80 +84,180 @@ function stableSort(array, comparator) {
   return stabilized.map(el => el[0]);
 }
 
-// --- Component: Print Preview (Fix #2: Handles Multiple Items) ---
+// --- Component: Print Preview ---
 function PrintPreview({ entry }) {
   if (!entry) return null;
 
   const { date, time } = splitDateAndTime(entry.TransactionDate);
   const receiptNo = entry.TransactionID || '';
-
-  // Determine if we have multiple items or a single flat entry
   const hasItems = entry.items && entry.items.length > 0;
   const itemsToPrint = hasItems ? entry.items : [entry];
 
   return (
     <Box sx={{
-      width: 320, bgcolor: "#fffdf7", borderRadius: 2, border: "1px solid #f2d7a2",
-      px: 3, py: 2.2, fontFamily: "monospace", fontSize: 13, mx: "auto"
+      width: 320, mx: "auto", position: 'relative',
+      background: 'linear-gradient(135deg, #fefcf5 0%, #fef9eb 100%)',
+      borderRadius: 4, overflow: 'hidden',
+      boxShadow: '0 8px 32px rgba(183,134,41,0.18), 0 2px 8px rgba(0,0,0,0.06)',
     }}>
-      {/* Header */}
-      <Typography align="center" sx={{ fontWeight: 700, fontSize: 15, mb: 0.4, color: GOLD_PRIMARY }}>
-        GURUKRUPA
-      </Typography>
-      <Typography align="center" sx={{ fontSize: 11, mb: 0.4 }}>
-        Computerized Testing & Laser Soldering
-      </Typography>
-      <Typography align="center" sx={{ fontSize: 11, mb: 0.4 }}>
-        3175/32, BEADON PURA, KAROL BAGH, DEL-05
-      </Typography>
-      <Typography align="center" sx={{ fontSize: 11, mb: 0.4 }}>------------------------------------------------</Typography>
+      {/* Top Gold Bar */}
+      <Box sx={{ 
+        height: 6, 
+        background: 'linear-gradient(90deg, #c9982e, #e6b84d, #c9982e)' 
+      }} />
 
-      <Typography align="center" sx={{ fontWeight: 700, fontSize: 13, mb: 0.2 }}>
-        Receipt
-      </Typography>
-      <Typography align="center" sx={{ fontSize: 11, mb: 0.6 }}>------------------------------------------------</Typography>
-
-      {/* Meta Data */}
-      <Typography sx={{ fontSize: 12, mb: 0.2 }}>Date: {date} {time}</Typography>
-      <Typography sx={{ fontSize: 12, mb: 0.4 }}>Receipt No: {receiptNo}</Typography>
-      <Typography align="center" sx={{ fontSize: 11, mb: 0.6 }}>------------------------------------------------</Typography>
-
-      {/* Customer Info */}
-      <Typography sx={{ fontSize: 12 }}>Cust: {entry.CustomerName}</Typography>
-      {entry.CustomerMobile && <Typography sx={{ fontSize: 12 }}>Mob: {entry.CustomerMobile}</Typography>}
-      <Typography align="center" sx={{ fontSize: 11, mt: 0.6, mb: 0.4 }}>------------------------------------------------</Typography>
-
-      {/* Items Table */}
-      <Box component="table" sx={{ width: '100%', fontSize: 12, borderCollapse: 'collapse' }}>
-        <Box component="thead">
-          <Box component="tr" sx={{ borderBottom: '1px solid #ccc' }}>
-            <Box component="th" sx={{ textAlign: 'left', py: 0.5, fontWeight: 'bold' }}>Item</Box>
-            <Box component="th" sx={{ textAlign: 'right', py: 0.5, fontWeight: 'bold' }}>Weight</Box>
-            <Box component="th" sx={{ textAlign: 'right', py: 0.5, fontWeight: 'bold' }}>Tunch</Box>
-          </Box>
+      <Box sx={{ px: 2.5, py: 2 }}>
+        {/* Shop Header */}
+        <Box sx={{ textAlign: 'center', mb: 1.5 }}>
+          <Typography sx={{ 
+            fontWeight: 900, fontSize: 22, letterSpacing: 4, lineHeight: 1.1,
+            background: 'linear-gradient(180deg, #c9982e 0%, #8b6914 100%)',
+            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+          }}>
+            GURUKRUPA
+          </Typography>
+          <Typography sx={{ fontSize: 8.5, color: '#a09070', mt: 0.5, letterSpacing: 1, textTransform: 'uppercase' }}>
+            Computerized Testing & Laser Soldering
+          </Typography>
+          <Typography sx={{ fontSize: 8.5, color: '#a09070', letterSpacing: 0.5 }}>
+            3175/32, Beadon Pura, Karol Bagh, Del-05
+          </Typography>
         </Box>
-        <Box component="tbody">
+
+        {/* Title Badge */}
+        <Box sx={{ 
+          textAlign: 'center', my: 1.2,
+          py: 0.6, mx: 2, borderRadius: 2,
+          background: 'linear-gradient(135deg, #b78629 0%, #d4a94a 100%)',
+          boxShadow: '0 2px 8px rgba(183,134,41,0.3)',
+        }}>
+          <Typography sx={{ 
+            fontWeight: 800, fontSize: 13, color: '#fff', 
+            letterSpacing: 2, textTransform: 'uppercase',
+          }}>
+            ✦ Tunch Receipt ✦
+          </Typography>
+        </Box>
+
+        {/* Receipt Meta - compact row */}
+        <Box sx={{ 
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          mt: 1.2, mb: 0.8, px: 0.5
+        }}>
+          <Box sx={{ 
+            bgcolor: '#f0e6cc', borderRadius: 1, px: 1, py: 0.2,
+            fontSize: 10, fontWeight: 700, color: '#8b6914'
+          }}>
+            #{receiptNo}
+          </Box>
+          <Typography sx={{ fontSize: 10, color: '#999' }}>
+            {date} • {time}
+          </Typography>
+        </Box>
+
+        {/* Customer Card */}
+        <Box sx={{ 
+          bgcolor: '#fff', borderRadius: 2, p: 1.2, mb: 1.2,
+          border: '1px solid #f0e6cc',
+          boxShadow: '0 1px 4px rgba(183,134,41,0.08)',
+        }}>
+          <Typography sx={{ fontSize: 13, fontWeight: 700, color: '#2c2c2c', lineHeight: 1.3 }}>
+            {entry.CustomerName}
+          </Typography>
+          {entry.CustomerMobile && (
+            <Typography sx={{ fontSize: 11, color: '#888', mt: 0.2 }}>
+              📞 {entry.CustomerMobile}
+            </Typography>
+          )}
+        </Box>
+
+        {/* Items Section */}
+        <Box sx={{ mb: 1 }}>
+          {/* Table Header */}
+          <Box sx={{ 
+            display: 'flex', px: 0.8, py: 0.5,
+            borderBottom: '2px solid #e6d5a8',
+          }}>
+            <Typography sx={{ flex: 2, fontSize: 9, fontWeight: 700, color: '#b0a080', textTransform: 'uppercase', letterSpacing: 1 }}>
+              Sample
+            </Typography>
+            <Typography sx={{ flex: 1, fontSize: 9, fontWeight: 700, color: '#b0a080', textTransform: 'uppercase', letterSpacing: 1, textAlign: 'right' }}>
+              Weight
+            </Typography>
+            <Typography sx={{ flex: 1, fontSize: 9, fontWeight: 700, color: '#b0a080', textTransform: 'uppercase', letterSpacing: 1, textAlign: 'right' }}>
+              Tunch
+            </Typography>
+          </Box>
+
+          {/* Item Rows */}
           {itemsToPrint.map((item, idx) => (
-            <Box component="tr" key={idx}>
-              <Box component="td" sx={{ textAlign: 'left', py: 0.3 }}>{item.SampleType}</Box>
-              <Box component="td" sx={{ textAlign: 'right', py: 0.3 }}>{formatWeight(item.SampleWeight)}</Box>
-              <Box component="td" sx={{ textAlign: 'right', py: 0.3 }}>{formatTwoDecimals(item.TouchValue)}</Box>
+            <Box key={idx} sx={{ 
+              display: 'flex', alignItems: 'center', px: 0.8, py: 0.7,
+              borderBottom: idx < itemsToPrint.length - 1 ? '1px dashed #efe0c0' : 'none',
+              '&:hover': { bgcolor: 'rgba(183,134,41,0.04)' },
+            }}>
+              <Typography sx={{ flex: 2, fontSize: 11.5, fontWeight: 500, color: '#444' }}>
+                {item.SampleType}
+              </Typography>
+              <Typography sx={{ flex: 1, fontSize: 11.5, color: '#666', textAlign: 'right' }}>
+                {formatWeight(item.SampleWeight)}g
+              </Typography>
+              <Box sx={{ 
+                flex: 1, textAlign: 'right',
+              }}>
+                <Typography component="span" sx={{ 
+                  fontSize: 12, fontWeight: 800, 
+                  color: '#b78629',
+                  bgcolor: '#faf0d6', px: 0.6, py: 0.15, borderRadius: 0.8,
+                }}>
+                  {formatTwoDecimals(item.TouchValue)}%
+                </Typography>
+              </Box>
             </Box>
           ))}
         </Box>
+
+        {/* Remark */}
+        {entry.Remark && (
+          <Box sx={{ 
+            bgcolor: '#fff8e8', borderRadius: 1.5, px: 1.2, py: 0.7, mb: 1,
+            borderLeft: '3px solid #d4a94a',
+          }}>
+            <Typography sx={{ fontSize: 10, color: '#888', fontWeight: 600, mb: 0.2 }}>
+              REMARK
+            </Typography>
+            <Typography sx={{ fontSize: 11, color: '#555', fontStyle: 'italic' }}>
+              {entry.Remark}
+            </Typography>
+          </Box>
+        )}
+
+        {/* Footer */}
+        <Box sx={{ 
+          textAlign: 'center', pt: 1, mt: 0.5,
+          borderTop: '1.5px dashed #ddd',
+        }}>
+          <Typography sx={{ fontSize: 8, color: '#bbb', mb: 0.5 }}>
+            Note: Deviation in result may be ± 0.20%
+          </Typography>
+          <Typography sx={{ 
+            fontSize: 12, fontWeight: 700,
+            background: 'linear-gradient(90deg, #c9982e, #8b6914)',
+            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+          }}>
+            Thank you! Visit Again 🙏
+          </Typography>
+          <Typography sx={{ fontSize: 8.5, color: '#bbb', mt: 0.3 }}>
+            📞 9075516373
+          </Typography>
+        </Box>
       </Box>
 
-      {entry.Remark && (
-        <>
-           <Typography align="center" sx={{ fontSize: 11, mt: 0.4, mb: 0.4 }}>------------------------------------------------</Typography>
-           <Typography sx={{ fontSize: 12 }}>Rem: {entry.Remark}</Typography>
-        </>
-      )}
-
-      <Typography align="center" sx={{ fontSize: 11, mt: 0.6, mb: 0.4 }}>------------------------------------------------</Typography>
-      <Typography align="center" sx={{ fontWeight: 700, fontSize: 12 }}>Thank you!</Typography>
-      <Typography align="center" sx={{ fontSize: 11 }}>Visit Again. Call: 9075516373</Typography>
-      <Typography align="center" sx={{ fontSize: 11, mt: 0.4 }}>------------------------------------------------</Typography>
+      {/* Bottom Gold Bar */}
+      <Box sx={{ 
+        height: 6, 
+        background: 'linear-gradient(90deg, #c9982e, #e6b84d, #c9982e)' 
+      }} />
     </Box>
   );
 }
