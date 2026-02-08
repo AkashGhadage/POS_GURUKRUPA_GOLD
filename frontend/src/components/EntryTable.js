@@ -426,7 +426,7 @@ export default function EntryTable({ refreshFlag, onCreateClick }) {
 
       {/* Filters */}
       <Box sx={{ display: 'flex', gap: 1.5, mt: 1, px: 2.4, mb: 2 }}>
-        <TextField label="Search" variant="outlined" size="small" sx={{ flex: 1 }} value={search} onChange={e => setSearch(e.target.value)} />
+        <TextField label="Search by SR. No, name or mobile" variant="outlined" size="small" sx={{ flex: 1 }} value={search} onChange={e => setSearch(e.target.value)} />
         <FormControl size="small" sx={{ minWidth: 120 }}>
           <InputLabel>Date</InputLabel>
           <Select value={dateFilter} label="Date" onChange={e => setDateFilter(e.target.value)}>
@@ -447,15 +447,15 @@ export default function EntryTable({ refreshFlag, onCreateClick }) {
               <TableHead>
                 <TableRow sx={{ bgcolor: TABLE_HEAD_BG }}>
                   <TableCell width={50} /> {/* Expand arrow col */}
-                  <TableCell><TableSortLabel active={orderBy === 'TransactionID'} direction={order} onClick={e => handleRequestSort(e, 'TransactionID')}>SR. No</TableSortLabel></TableCell>
-                  <TableCell>Date</TableCell>
-                  <TableCell><TableSortLabel active={orderBy === 'CustomerName'} direction={order} onClick={e => handleRequestSort(e, 'CustomerName')}>Name</TableSortLabel></TableCell>
-                  <TableCell>Mobile</TableCell>
-                  <TableCell align="right">Weight</TableCell>
-                  <TableCell>Type</TableCell>
-                  <TableCell align="right">Tunch</TableCell>
-                  <TableCell>Remark</TableCell>
-                  <TableCell>Actions</TableCell>
+                  <TableCell><TableSortLabel active={orderBy === 'TransactionID'} direction={order} onClick={e => handleRequestSort(e, 'TransactionID')}><b>SR. No</b></TableSortLabel></TableCell>
+                  <TableCell><b>Date</b></TableCell>
+                  <TableCell><TableSortLabel active={orderBy === 'CustomerName'} direction={order} onClick={e => handleRequestSort(e, 'CustomerName')}><b>Name</b></TableSortLabel></TableCell>
+                  <TableCell><b>Mobile</b></TableCell>
+                  <TableCell align="right"><b>Weight</b></TableCell>
+                  <TableCell><b>Type</b></TableCell>
+                  <TableCell align="right"><b>Tunch</b></TableCell>
+                  <TableCell><b>Remark</b></TableCell>
+                  <TableCell><b>Actions</b></TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
