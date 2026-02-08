@@ -102,6 +102,55 @@ def get_entry(txn_id: int):
             raise HTTPException(status_code=404, detail="Transaction not found")
         return header
 
+# ---- UPDATE (Multi-Item) ----
+@app.put("/entries/{txn_id}")
+def update_entry(txn_id: int, request: Request = None):
+    import asyncio
+    # Get the raw JSON body
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    
+    with Session(engine) as session:
+        header = session.get(GoldTestingHeader, txn_id)
+        if not header:
+            raise HTTPException(status_code=404, detail="Transaction not found")
+        
+        return header
+
+@app.put("/entries/{txn_id}/items")
+async def update_entry_items(txn_id: int, request: Request):
+    """Update items for a transaction (Touch, Karat, Remark values)"""
+    data = await request.json()
+    items_data = data.get("items", [])
+    
+    with Session(engine) as session:
+        header = session.get(GoldTestingHeader, txn_id)
+        if not header:
+            raise HTTPException(status_code=404, detail="Transaction not found")
+        
+        # Update each item
+        for item_update in items_data:
+            item_id = item_update.get("ItemID")
+            if item_id:
+                item = session.get(GoldTestingItem, item_id)
+                if item and item.TransactionID == txn_id:
+                    item.TouchValue = float(item_update.get("TouchValue", item.TouchValue))
+                    item.KaratValue = float(item_update.get("KaratValue", item.KaratValue))
+                    item.Remark = item_update.get("Remark", item.Remark)
+                    session.add(item)
+        
+        # Update the header's TestedOn timestamp
+        header.TestedOn = datetime.now().isoformat()
+        session.add(header)
+        session.commit()
+        
+        # Return updated header with items
+        session.refresh(header)
+        items = session.exec(select(GoldTestingItem).where(GoldTestingItem.TransactionID == txn_id)).all()
+        result = header.dict()
+        result["items"] = [item.dict() for item in items]
+        return result
+
 # ---- DELETE ----
 @app.delete("/entries/{txn_id}")
 def delete_entry(txn_id: int):
@@ -109,7 +158,14 @@ def delete_entry(txn_id: int):
         header = session.get(GoldTestingHeader, txn_id)
         if not header:
             raise HTTPException(status_code=404, detail="Transaction not found")
-        session.delete(header) # SQLModel handles cascading if configured, or delete items manually
+        
+        # Delete all items first (manual cascade)
+        items = session.exec(select(GoldTestingItem).where(GoldTestingItem.TransactionID == txn_id)).all()
+        for item in items:
+            session.delete(item)
+        
+        # Then delete the header
+        session.delete(header)
         session.commit()
         return {"detail": "Deleted", "TransactionID": txn_id}
 

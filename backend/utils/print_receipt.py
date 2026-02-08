@@ -136,17 +136,30 @@ def do_print_receipt(entry: dict, copies: int):
                     dt_object = datetime.strptime(date_raw, "%Y-%m-%dT%H:%M:%S.%f")
                     date_str = dt_object.strftime("%d-%m-%Y")
                     time_str = dt_object.strftime("%H:%M")
-                except ValueError as e:
-                    logging.error(f"Error parsing date format: {e}")
+                except ValueError:
+                    try:
+                        # Try without microseconds
+                        dt_object = datetime.strptime(date_raw, "%Y-%m-%dT%H:%M:%S")
+                        date_str = dt_object.strftime("%d-%m-%Y")
+                        time_str = dt_object.strftime("%H:%M")
+                    except ValueError as e:
+                        logging.error(f"Error parsing date format: {e}")
 
-            weight_str = _fmt_decimal(entry.get("SampleWeight"), 3)
-            touch_str = _fmt_decimal(entry.get("TouchValue"), 2)
-            karat_str = _fmt_decimal(entry.get("KaratValue"), 2)
             customer_name = entry.get("CustomerName", "") or ""
             customer_mobile = entry.get("CustomerMobile", "") or ""
-            sample_type = entry.get("SampleType", "") or ""
-            remark = entry.get("Remark", "") or ""
             transaction_id = entry.get("TransactionID", "") or ""
+            
+            # Handle multi-item structure
+            items = entry.get("items", [])
+            if not items:
+                # Fallback for legacy single-item structure
+                items = [{
+                    "SampleWeight": entry.get("SampleWeight"),
+                    "SampleType": entry.get("SampleType", ""),
+                    "TouchValue": entry.get("TouchValue"),
+                    "KaratValue": entry.get("KaratValue"),
+                    "Remark": entry.get("Remark", "")
+                }]
 
             for _ in range(num_copies):
                 # Logo
@@ -179,24 +192,44 @@ def do_print_receipt(entry: dict, copies: int):
 
                 printer.text("-" * 48 + "\n")
 
-                # Customer and sample details
+                # Customer details
                 if customer_name:
                     _print_table_row(printer, "Name", customer_name)
                 if customer_mobile:
                     _print_table_row(printer, "Mobile", customer_mobile)
-                if sample_type:
-                    _print_table_row(printer, "Sample", sample_type)
-                if weight_str:
-                    _print_table_row(printer, "Weight", weight_str + " gm")
-                if touch_str and Decimal(touch_str) != Decimal("0"):
-                    printer.set(bold=True)
-                    _print_table_row(printer, "Tunch", touch_str + " %")
-                    printer.set(bold=False)
-                # if karat_str or karat_str == "0":
-                #     _print_table_row(printer, "Karat", karat_str + "K")
-
-                if remark:
-                    _print_wrapped_row(printer, "Remark", remark, width_label=15)
+                
+                printer.text("-" * 48 + "\n")
+                
+                # Print all items
+                for idx, item in enumerate(items, 1):
+                    sample_type = item.get("SampleType", "") or ""
+                    weight_str = _fmt_decimal(item.get("SampleWeight"), 3)
+                    touch_str = _fmt_decimal(item.get("TouchValue"), 2)
+                    karat_str = _fmt_decimal(item.get("KaratValue"), 2)
+                    remark = item.get("Remark", "") or ""
+                    
+                    # Item header (only show item number if multiple items)
+                    if len(items) > 1:
+                        printer.set(bold=True)
+                        printer.text(f"Item {idx}:\n")
+                        printer.set(bold=False)
+                    
+                    if sample_type:
+                        _print_table_row(printer, "Sample", sample_type)
+                    if weight_str:
+                        _print_table_row(printer, "Weight", weight_str + " gm")
+                    if touch_str and Decimal(touch_str) != Decimal("0"):
+                        printer.set(bold=True)
+                        _print_table_row(printer, "Tunch", touch_str + " %")
+                        printer.set(bold=False)
+                    if karat_str and Decimal(karat_str) != Decimal("0"):
+                        _print_table_row(printer, "Karat", karat_str + " K")
+                    if remark:
+                        _print_wrapped_row(printer, "Remark", remark, width_label=15)
+                    
+                    # Separator between items (except last)
+                    if len(items) > 1 and idx < len(items):
+                        printer.text("- - - - - - - - - - - - - - - - - - - - - - - -\n")
 
                 printer.text("-" * 48 + "\n")
 
