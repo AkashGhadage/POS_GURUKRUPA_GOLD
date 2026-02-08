@@ -13,6 +13,7 @@ class GoldTestingHeader(SQLModel, table=True):
     TransactionDate: Optional[str] = Field(default_factory=lambda: datetime.now().isoformat())
     TestingMethod: Optional[str] = Field(default="XRF")
     TestedOn: Optional[str] = Field(default=None)
+    Remark: Optional[str] = Field(default="")
     
     # Relationship to link the items
     items: List["GoldTestingItem"] = Relationship(back_populates="header")
@@ -27,7 +28,6 @@ class GoldTestingItem(SQLModel, table=True):
     SampleWeight: float
     SampleType: str
     TouchValue: float
-    Remark: Optional[str] = Field(default="")
     
     # The Link: Points back to the Header's TransactionID
     TransactionID: int = Field(foreign_key="GoldTestingHeaders.TransactionID")

@@ -85,16 +85,14 @@ export default function EntryForm({ onSuccess }) {
     let finalItems = itemsList.map(item => ({
       SampleWeight: parseFloat(item.SampleWeight),
       SampleType: item.SampleType,
-      TouchValue: 0.0,
-      Remark: ""
+      TouchValue: 0.0
     }));
 
     if (form.SampleWeight && parseFloat(form.SampleWeight) > 0) {
       finalItems.push({
         SampleWeight: parseFloat(form.SampleWeight),
         SampleType: form.SampleType,
-        TouchValue: 0.0,
-        Remark: ""
+        TouchValue: 0.0
       });
     }
 
@@ -108,6 +106,7 @@ export default function EntryForm({ onSuccess }) {
       CustomerName: form.CustomerName.toUpperCase(), // Clean data: Always save names in Uppercase
       CustomerMobile: form.CustomerMobile || "",
       TestingMethod: form.TestingMethod,
+      Remark: form.Remark || "",  // Transaction-level remark
       Items: finalItems 
     };
 

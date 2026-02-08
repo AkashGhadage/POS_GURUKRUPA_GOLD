@@ -34,7 +34,6 @@ class ItemCreate(SQLModel):
     SampleWeight: float  # Max 3 decimal places
     SampleType: str
     TouchValue: float    # Max 2 decimal places (0-100 range)
-    Remark: Optional[str] = ""
     
     @classmethod
     def validate_decimals(cls, weight: float, touch: float):
@@ -48,6 +47,7 @@ class TransactionCreate(SQLModel):
     CustomerName: str
     CustomerMobile: str
     TestingMethod: str
+    Remark: Optional[str] = ""
     Items: List[ItemCreate]  # Expects an array of items from React
 
 # ---- CREATE (Multi-Item) ----
@@ -60,6 +60,7 @@ def create_entry(data: TransactionCreate = Body(...)):
                 CustomerName=data.CustomerName,
                 CustomerMobile=data.CustomerMobile,
                 TestingMethod=data.TestingMethod,
+                Remark=data.Remark or "",
                 TransactionDate=datetime.now().isoformat()
             )
             session.add(header)
@@ -76,7 +77,6 @@ def create_entry(data: TransactionCreate = Body(...)):
                     SampleWeight=weight,
                     SampleType=item_data.SampleType,
                     TouchValue=touch,
-                    Remark=item_data.Remark or "",
                     TransactionID=header.TransactionID
                 )
                 session.add(new_item)
@@ -133,9 +133,10 @@ def update_entry(txn_id: int, request: Request = None):
 
 @app.put("/entries/{txn_id}/items")
 async def update_entry_items(txn_id: int, request: Request):
-    """Update items for a transaction (Touch, Remark values)"""
+    """Update items for a transaction (Tunch values) and transaction Remark"""
     data = await request.json()
     items_data = data.get("items", [])
+    remark = data.get("Remark")  # Transaction-level remark
     
     with Session(engine) as session:
         header = session.get(GoldTestingHeader, txn_id)
@@ -153,10 +154,11 @@ async def update_entry_items(txn_id: int, request: Request):
                     touch_val = max(0, min(100, round(touch_val, 2)))
                     
                     item.TouchValue = touch_val
-                    item.Remark = item_update.get("Remark", item.Remark)
                     session.add(item)
         
-        # Update the header's TestedOn timestamp
+        # Update header's Remark and TestedOn timestamp
+        if remark is not None:
+            header.Remark = remark
         header.TestedOn = datetime.now().isoformat()
         session.add(header)
         session.commit()
