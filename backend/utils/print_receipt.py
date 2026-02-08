@@ -157,7 +157,6 @@ def do_print_receipt(entry: dict, copies: int):
                     "SampleWeight": entry.get("SampleWeight"),
                     "SampleType": entry.get("SampleType", ""),
                     "TouchValue": entry.get("TouchValue"),
-                    "KaratValue": entry.get("KaratValue"),
                     "Remark": entry.get("Remark", "")
                 }]
 
@@ -205,7 +204,6 @@ def do_print_receipt(entry: dict, copies: int):
                     sample_type = item.get("SampleType", "") or ""
                     weight_str = _fmt_decimal(item.get("SampleWeight"), 3)
                     touch_str = _fmt_decimal(item.get("TouchValue"), 2)
-                    karat_str = _fmt_decimal(item.get("KaratValue"), 2)
                     remark = item.get("Remark", "") or ""
                     
                     # Item header (only show item number if multiple items)
@@ -222,8 +220,6 @@ def do_print_receipt(entry: dict, copies: int):
                         printer.set(bold=True)
                         _print_table_row(printer, "Tunch", touch_str + " %")
                         printer.set(bold=False)
-                    if karat_str and Decimal(karat_str) != Decimal("0"):
-                        _print_table_row(printer, "Karat", karat_str + " K")
                     if remark:
                         _print_wrapped_row(printer, "Remark", remark, width_label=15)
                     

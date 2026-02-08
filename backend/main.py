@@ -31,11 +31,18 @@ def on_startup():
 
 # ---- Request Models (Schemas) ----
 class ItemCreate(SQLModel):
-    SampleWeight: float
+    SampleWeight: float  # Max 3 decimal places
     SampleType: str
-    TouchValue: float
-    KaratValue: float
+    TouchValue: float    # Max 2 decimal places (0-100 range)
     Remark: Optional[str] = ""
+    
+    @classmethod
+    def validate_decimals(cls, weight: float, touch: float):
+        # Round weight to 3 decimal places
+        weight = round(weight, 3)
+        # Round touch to 2 decimal places and clamp to 0-100
+        touch = max(0, min(100, round(touch, 2)))
+        return weight, touch
 
 class TransactionCreate(SQLModel):
     CustomerName: str
@@ -59,10 +66,17 @@ def create_entry(data: TransactionCreate = Body(...)):
             session.commit()
             session.refresh(header)
 
-            # 2. Save all items linked to this header
+            # 2. Save all items linked to this header (with validation)
             for item_data in data.Items:
+                # Apply decimal validation
+                weight = round(item_data.SampleWeight, 3)
+                touch = max(0, min(100, round(item_data.TouchValue, 2)))
+                
                 new_item = GoldTestingItem(
-                    **item_data.dict(),
+                    SampleWeight=weight,
+                    SampleType=item_data.SampleType,
+                    TouchValue=touch,
+                    Remark=item_data.Remark or "",
                     TransactionID=header.TransactionID
                 )
                 session.add(new_item)
@@ -119,7 +133,7 @@ def update_entry(txn_id: int, request: Request = None):
 
 @app.put("/entries/{txn_id}/items")
 async def update_entry_items(txn_id: int, request: Request):
-    """Update items for a transaction (Touch, Karat, Remark values)"""
+    """Update items for a transaction (Touch, Remark values)"""
     data = await request.json()
     items_data = data.get("items", [])
     
@@ -128,14 +142,17 @@ async def update_entry_items(txn_id: int, request: Request):
         if not header:
             raise HTTPException(status_code=404, detail="Transaction not found")
         
-        # Update each item
+        # Update each item with validation
         for item_update in items_data:
             item_id = item_update.get("ItemID")
             if item_id:
                 item = session.get(GoldTestingItem, item_id)
                 if item and item.TransactionID == txn_id:
-                    item.TouchValue = float(item_update.get("TouchValue", item.TouchValue))
-                    item.KaratValue = float(item_update.get("KaratValue", item.KaratValue))
+                    # Validate Touch: max 2 decimals, range 0-100
+                    touch_val = float(item_update.get("TouchValue", item.TouchValue))
+                    touch_val = max(0, min(100, round(touch_val, 2)))
+                    
+                    item.TouchValue = touch_val
                     item.Remark = item_update.get("Remark", item.Remark)
                     session.add(item)
         

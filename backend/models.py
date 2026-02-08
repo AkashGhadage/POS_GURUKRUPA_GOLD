@@ -27,7 +27,6 @@ class GoldTestingItem(SQLModel, table=True):
     SampleWeight: float
     SampleType: str
     TouchValue: float
-    KaratValue: float
     Remark: Optional[str] = Field(default="")
     
     # The Link: Points back to the Header's TransactionID
