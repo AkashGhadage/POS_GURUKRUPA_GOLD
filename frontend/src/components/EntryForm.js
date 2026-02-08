@@ -27,10 +27,21 @@ export default function EntryForm({ onSuccess }) {
 
   // --- VALIDATION RULES ---
   const validateMobile = (val) => val.replace(/\D/g, '').slice(0, 10);
+  
+  // Weight: max 3 decimal places
   const validateWeight = (val) => {
     if (val === '') return '';
-    const num = parseFloat(val);
-    return num >= 0 ? val : '0';
+    // Allow only numbers and one decimal point
+    let cleaned = val.replace(/[^0-9.]/g, '');
+    // Prevent multiple decimal points
+    const parts = cleaned.split('.');
+    if (parts.length > 2) cleaned = parts[0] + '.' + parts.slice(1).join('');
+    // Limit to 3 decimal places
+    if (parts.length === 2 && parts[1].length > 3) {
+      cleaned = parts[0] + '.' + parts[1].slice(0, 3);
+    }
+    const num = parseFloat(cleaned);
+    return num >= 0 ? cleaned : '0';
   };
 
   const handleSearch = async (query) => {
@@ -75,7 +86,6 @@ export default function EntryForm({ onSuccess }) {
       SampleWeight: parseFloat(item.SampleWeight),
       SampleType: item.SampleType,
       TouchValue: 0.0,
-      KaratValue: 0.0,
       Remark: ""
     }));
 
@@ -84,7 +94,6 @@ export default function EntryForm({ onSuccess }) {
         SampleWeight: parseFloat(form.SampleWeight),
         SampleType: form.SampleType,
         TouchValue: 0.0,
-        KaratValue: 0.0,
         Remark: ""
       });
     }
@@ -212,9 +221,11 @@ export default function EntryForm({ onSuccess }) {
             renderInput={(params) => <TextField {...params} label="Sample Type" fullWidth />}
           />
           <Box sx={{ display: 'flex', gap: 1 }}>
-            <TextField label="Weight (gm)" fullWidth size="small" type="number" 
+            <TextField label="Weight (gm)" fullWidth size="small"
               value={form.SampleWeight} 
-              onChange={(e) => setForm({...form, SampleWeight: validateWeight(e.target.value)})} 
+              onChange={(e) => setForm({...form, SampleWeight: validateWeight(e.target.value)})}
+              placeholder="0.000"
+              helperText="Max 3 decimals"
             />
             <Button variant="contained" onClick={handleAdd} sx={{ minWidth: '60px', bgcolor: '#B78629' }}>
               <AddIcon />

@@ -8,7 +8,7 @@ import {
 const GOLD_PRIMARY = "#B78629";
 
 export default function EditDialog({ open, onClose, entry, onSave, loading }) {
-  // State for all items (each with TouchValue, KaratValue, Remark)
+  // State for all items (each with TouchValue, Remark)
   const [items, setItems] = useState([]);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -22,7 +22,6 @@ export default function EditDialog({ open, onClose, entry, onSave, loading }) {
         SampleType: item.SampleType,
         SampleWeight: item.SampleWeight,
         TouchValue: item.TouchValue ?? "",
-        KaratValue: item.KaratValue ?? "",
         Remark: item.Remark || ""
       })));
     } else if (entry) {
@@ -32,7 +31,6 @@ export default function EditDialog({ open, onClose, entry, onSave, loading }) {
         SampleType: entry.SampleType,
         SampleWeight: entry.SampleWeight,
         TouchValue: entry.TouchValue ?? "",
-        KaratValue: entry.KaratValue ?? "",
         Remark: entry.Remark || ""
       }]);
     } else {
@@ -42,16 +40,40 @@ export default function EditDialog({ open, onClose, entry, onSave, loading }) {
 
   // Update a specific item's field
   const handleItemChange = (index, field, value) => {
+    // Apply validation based on field type
+    let validatedValue = value;
+    if (field === 'TouchValue') {
+      validatedValue = validateTouch(value);
+    }
     setItems(prev => prev.map((item, i) => 
-      i === index ? { ...item, [field]: value } : item
+      i === index ? { ...item, [field]: validatedValue } : item
     ));
+  };
+
+  // Touch value: max 2 decimal places, range 0-100
+  const validateTouch = (val) => {
+    if (val === '') return '';
+    // Allow only numbers and one decimal point
+    let cleaned = val.replace(/[^0-9.]/g, '');
+    // Prevent multiple decimal points
+    const parts = cleaned.split('.');
+    if (parts.length > 2) cleaned = parts[0] + '.' + parts.slice(1).join('');
+    // Limit to 2 decimal places
+    if (parts.length === 2 && parts[1].length > 2) {
+      cleaned = parts[0] + '.' + parts[1].slice(0, 2);
+    }
+    // Ensure value is within valid range (0-100 for percentage)
+    const num = parseFloat(cleaned);
+    if (num > 100) return '100';
+    if (num < 0) return '0';
+    return cleaned;
   };
 
   function handleSave() {
     // Validate all items
     for (let i = 0; i < items.length; i++) {
-      if (isNaN(Number(items[i].TouchValue)) || isNaN(Number(items[i].KaratValue))) {
-        setError(`Item ${i + 1}: Touch and Karat must be numbers.`);
+      if (isNaN(Number(items[i].TouchValue))) {
+        setError(`Item ${i + 1}: Tunch must be a number.`);
         return;
       }
     }
@@ -65,7 +87,6 @@ export default function EditDialog({ open, onClose, entry, onSave, loading }) {
         SampleType: item.SampleType,
         SampleWeight: item.SampleWeight,
         TouchValue: Number(item.TouchValue) || 0,
-        KaratValue: Number(item.KaratValue) || 0,
         Remark: item.Remark
       }))
     };
@@ -137,22 +158,13 @@ export default function EditDialog({ open, onClose, entry, onSave, loading }) {
                       sx={{ width: 120 }}
                     />
                     <TextField
-                      label="Touch Value"
+                      label="Tunch Value"
                       value={item.TouchValue}
-                      type="number"
                       onChange={e => handleItemChange(index, 'TouchValue', e.target.value)}
                       size="small"
                       sx={{ width: 120 }}
-                      inputProps={{ step: "0.01" }}
-                    />
-                    <TextField
-                      label="Karat Value"
-                      value={item.KaratValue}
-                      type="number"
-                      onChange={e => handleItemChange(index, 'KaratValue', e.target.value)}
-                      size="small"
-                      sx={{ width: 120 }}
-                      inputProps={{ step: "0.01" }}
+                      placeholder="0.00"
+                      helperText="Max 2 decimals"
                     />
                     <TextField
                       label="Remark"

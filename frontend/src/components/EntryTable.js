@@ -118,10 +118,8 @@ function PrintPreview({ entry }) {
       <Typography align="center" sx={{ fontSize: 11, mb: 0.6 }}>------------------------------------------------</Typography>
 
       {/* Meta Data */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, mb: 0.2 }}>
-        <span>Dt: {date}</span><span>Tm: {time}</span>
-      </Box>
-      <Typography sx={{ fontSize: 12, mb: 0.4 }}>Rcpt No: {receiptNo}</Typography>
+      <Typography sx={{ fontSize: 12, mb: 0.2 }}>Date: {date} {time}</Typography>
+      <Typography sx={{ fontSize: 12, mb: 0.4 }}>Receipt No: {receiptNo}</Typography>
       <Typography align="center" sx={{ fontSize: 11, mb: 0.6 }}>------------------------------------------------</Typography>
 
       {/* Customer Info */}
@@ -129,15 +127,25 @@ function PrintPreview({ entry }) {
       {entry.CustomerMobile && <Typography sx={{ fontSize: 12 }}>Mob: {entry.CustomerMobile}</Typography>}
       <Typography align="center" sx={{ fontSize: 11, mt: 0.6, mb: 0.4 }}>------------------------------------------------</Typography>
 
-      {/* Items Loop */}
-      {itemsToPrint.map((item, idx) => (
-        <Box key={idx} sx={{ mb: 1 }}>
-          <Typography sx={{ fontSize: 12, fontWeight: 'bold' }}>Item {idx + 1}: {item.SampleType}</Typography>
-          <Typography sx={{ fontSize: 12 }}>
-             Wt: {formatWeight(item.SampleWeight)} | T: {formatTwoDecimals(item.TouchValue)} | K: {formatTwoDecimals(item.KaratValue)}
-          </Typography>
+      {/* Items Table */}
+      <Box component="table" sx={{ width: '100%', fontSize: 12, borderCollapse: 'collapse' }}>
+        <Box component="thead">
+          <Box component="tr" sx={{ borderBottom: '1px solid #ccc' }}>
+            <Box component="th" sx={{ textAlign: 'left', py: 0.5, fontWeight: 'bold' }}>Item</Box>
+            <Box component="th" sx={{ textAlign: 'right', py: 0.5, fontWeight: 'bold' }}>Weight</Box>
+            <Box component="th" sx={{ textAlign: 'right', py: 0.5, fontWeight: 'bold' }}>Tunch</Box>
+          </Box>
         </Box>
-      ))}
+        <Box component="tbody">
+          {itemsToPrint.map((item, idx) => (
+            <Box component="tr" key={idx}>
+              <Box component="td" sx={{ textAlign: 'left', py: 0.3 }}>{item.SampleType}</Box>
+              <Box component="td" sx={{ textAlign: 'right', py: 0.3 }}>{formatWeight(item.SampleWeight)}</Box>
+              <Box component="td" sx={{ textAlign: 'right', py: 0.3 }}>{formatTwoDecimals(item.TouchValue)}</Box>
+            </Box>
+          ))}
+        </Box>
+      </Box>
 
       {entry.Remark && (
         <>
@@ -195,7 +203,6 @@ function Row({ row, rowIndex, onEdit, onPrint }) {
         <TableCell align="right">{formatWeight(mainDisplay.SampleWeight)}</TableCell>
         <TableCell>{mainDisplay.SampleType}</TableCell>
         <TableCell align="right">{formatTwoDecimals(mainDisplay.TouchValue)}</TableCell>
-        <TableCell align="right">{formatTwoDecimals(mainDisplay.KaratValue)}</TableCell>
         
         <TableCell>{row.Remark}</TableCell>
 
@@ -211,7 +218,7 @@ function Row({ row, rowIndex, onEdit, onPrint }) {
 
       {/* Collapsible Detail Row */}
       <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={11}>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={10}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1, ml: 6 }}>
               <Typography variant="subtitle2" gutterBottom component="div" sx={{color: GOLD_PRIMARY}}>
@@ -222,8 +229,7 @@ function Row({ row, rowIndex, onEdit, onPrint }) {
                   <TableRow>
                     <TableCell>Type</TableCell>
                     <TableCell align="right">Weight</TableCell>
-                    <TableCell align="right">Touch</TableCell>
-                    <TableCell align="right">Karat</TableCell>
+                    <TableCell align="right">Tunch</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -233,7 +239,6 @@ function Row({ row, rowIndex, onEdit, onPrint }) {
                       <TableCell component="th" scope="row">{subItem.SampleType}</TableCell>
                       <TableCell align="right">{formatWeight(subItem.SampleWeight)}</TableCell>
                       <TableCell align="right">{formatTwoDecimals(subItem.TouchValue)}</TableCell>
-                      <TableCell align="right">{formatTwoDecimals(subItem.KaratValue)}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -394,8 +399,7 @@ export default function EntryTable({ refreshFlag, onCreateClick }) {
                   <TableCell>Mobile</TableCell>
                   <TableCell align="right">Weight</TableCell>
                   <TableCell>Type</TableCell>
-                  <TableCell align="right">Touch</TableCell>
-                  <TableCell align="right">Karat</TableCell>
+                  <TableCell align="right">Tunch</TableCell>
                   <TableCell>Remark</TableCell>
                   <TableCell>Actions</TableCell>
                 </TableRow>
