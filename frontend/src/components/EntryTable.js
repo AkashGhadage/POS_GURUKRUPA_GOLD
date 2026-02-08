@@ -95,169 +95,120 @@ function PrintPreview({ entry }) {
 
   return (
     <Box sx={{
-      width: 320, mx: "auto", position: 'relative',
-      background: 'linear-gradient(135deg, #fefcf5 0%, #fef9eb 100%)',
-      borderRadius: 4, overflow: 'hidden',
-      boxShadow: '0 8px 32px rgba(183,134,41,0.18), 0 2px 8px rgba(0,0,0,0.06)',
+      width: 340, mx: "auto",
+      bgcolor: '#fff', borderRadius: 3, overflow: 'hidden',
+      border: '1.5px solid #e6d5a8',
+      boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
     }}>
-      {/* Top Gold Bar */}
-      <Box sx={{ 
-        height: 6, 
-        background: 'linear-gradient(90deg, #c9982e, #e6b84d, #c9982e)' 
-      }} />
+      {/* Gold Top Bar */}
+      <Box sx={{ height: 5, bgcolor: GOLD_PRIMARY }} />
 
-      <Box sx={{ px: 2.5, py: 2 }}>
-        {/* Shop Header */}
-        <Box sx={{ textAlign: 'center', mb: 1.5 }}>
-          <Typography sx={{ 
-            fontWeight: 900, fontSize: 22, letterSpacing: 4, lineHeight: 1.1,
-            background: 'linear-gradient(180deg, #c9982e 0%, #8b6914 100%)',
-            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-          }}>
-            GURUKRUPA
-          </Typography>
-          <Typography sx={{ fontSize: 8.5, color: '#a09070', mt: 0.5, letterSpacing: 1, textTransform: 'uppercase' }}>
-            Computerized Testing & Laser Soldering
-          </Typography>
-          <Typography sx={{ fontSize: 8.5, color: '#a09070', letterSpacing: 0.5 }}>
-            3175/32, Beadon Pura, Karol Bagh, Del-05
+      <Box sx={{ px: 3, py: 2.5 }}>
+        {/* Shop Name */}
+        <Typography align="center" sx={{ fontWeight: 800, fontSize: 20, color: GOLD_PRIMARY, letterSpacing: 3, mb: 0.5 }}>
+          GURUKRUPA
+        </Typography>
+        <Typography align="center" sx={{ fontSize: 11, color: '#777', mb: 0.2 }}>
+          Computerized Testing & Laser Soldering
+        </Typography>
+        <Typography align="center" sx={{ fontSize: 11, color: '#777', mb: 2 }}>
+          3175/32, Beadon Pura, Karol Bagh, Del-05
+        </Typography>
+
+        {/* Tunch Receipt Title */}
+        <Box sx={{ textAlign: 'center', bgcolor: GOLD_PRIMARY, borderRadius: 1.5, py: 0.8, mb: 2 }}>
+          <Typography sx={{ fontWeight: 700, fontSize: 14, color: '#fff', letterSpacing: 2 }}>
+            TUNCH RECEIPT
           </Typography>
         </Box>
 
-        {/* Title Badge */}
-        <Box sx={{ 
-          textAlign: 'center', my: 1.2,
-          py: 0.6, mx: 2, borderRadius: 2,
-          background: 'linear-gradient(135deg, #b78629 0%, #d4a94a 100%)',
-          boxShadow: '0 2px 8px rgba(183,134,41,0.3)',
-        }}>
-          <Typography sx={{ 
-            fontWeight: 800, fontSize: 13, color: '#fff', 
-            letterSpacing: 2, textTransform: 'uppercase',
-          }}>
-            ✦ Tunch Receipt ✦
+        {/* Receipt No & Date */}
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
+          <Typography sx={{ fontSize: 13, color: '#333', fontWeight: 600 }}>
+            Receipt #{receiptNo}
+          </Typography>
+          <Typography sx={{ fontSize: 13, color: '#555' }}>
+            {date} &bull; {time}
           </Typography>
         </Box>
 
-        {/* Receipt Meta - compact row */}
-        <Box sx={{ 
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          mt: 1.2, mb: 0.8, px: 0.5
-        }}>
-          <Box sx={{ 
-            bgcolor: '#f0e6cc', borderRadius: 1, px: 1, py: 0.2,
-            fontSize: 10, fontWeight: 700, color: '#8b6914'
-          }}>
-            #{receiptNo}
-          </Box>
-          <Typography sx={{ fontSize: 10, color: '#999' }}>
-            {date} • {time}
-          </Typography>
-        </Box>
-
-        {/* Customer Card */}
-        <Box sx={{ 
-          bgcolor: '#fff', borderRadius: 2, p: 1.2, mb: 1.2,
-          border: '1px solid #f0e6cc',
-          boxShadow: '0 1px 4px rgba(183,134,41,0.08)',
-        }}>
-          <Typography sx={{ fontSize: 13, fontWeight: 700, color: '#2c2c2c', lineHeight: 1.3 }}>
+        {/* Customer Info */}
+        <Box sx={{ bgcolor: '#faf6ee', borderRadius: 1.5, p: 1.5, mb: 2 }}>
+          <Typography sx={{ fontSize: 14, fontWeight: 700, color: '#222' }}>
             {entry.CustomerName}
           </Typography>
           {entry.CustomerMobile && (
-            <Typography sx={{ fontSize: 11, color: '#888', mt: 0.2 }}>
+            <Typography sx={{ fontSize: 13, color: '#555', mt: 0.3 }}>
               📞 {entry.CustomerMobile}
             </Typography>
           )}
         </Box>
 
-        {/* Items Section */}
-        <Box sx={{ mb: 1 }}>
-          {/* Table Header */}
-          <Box sx={{ 
-            display: 'flex', px: 0.8, py: 0.5,
-            borderBottom: '2px solid #e6d5a8',
+        {/* Divider */}
+        <Box sx={{ borderBottom: '1px solid #e6d5a8', mb: 1.5 }} />
+
+        {/* Items Table Header */}
+        <Box sx={{ display: 'flex', mb: 0.8, px: 0.5 }}>
+          <Typography sx={{ flex: 2, fontSize: 11, fontWeight: 700, color: '#999', textTransform: 'uppercase' }}>
+            Sample
+          </Typography>
+          <Typography sx={{ flex: 1, fontSize: 11, fontWeight: 700, color: '#999', textTransform: 'uppercase', textAlign: 'right' }}>
+            Weight
+          </Typography>
+          <Typography sx={{ flex: 1, fontSize: 11, fontWeight: 700, color: '#999', textTransform: 'uppercase', textAlign: 'right' }}>
+            Tunch
+          </Typography>
+        </Box>
+
+        {/* Items */}
+        {itemsToPrint.map((item, idx) => (
+          <Box key={idx} sx={{
+            display: 'flex', alignItems: 'center', px: 0.5, py: 1,
+            borderBottom: idx < itemsToPrint.length - 1 ? '1px dashed #e8e0d0' : 'none',
           }}>
-            <Typography sx={{ flex: 2, fontSize: 9, fontWeight: 700, color: '#b0a080', textTransform: 'uppercase', letterSpacing: 1 }}>
-              Sample
+            <Typography sx={{ flex: 2, fontSize: 14, color: '#333' }}>
+              {item.SampleType}
             </Typography>
-            <Typography sx={{ flex: 1, fontSize: 9, fontWeight: 700, color: '#b0a080', textTransform: 'uppercase', letterSpacing: 1, textAlign: 'right' }}>
-              Weight
+            <Typography sx={{ flex: 1, fontSize: 14, color: '#444', textAlign: 'right' }}>
+              {formatWeight(item.SampleWeight)}g
             </Typography>
-            <Typography sx={{ flex: 1, fontSize: 9, fontWeight: 700, color: '#b0a080', textTransform: 'uppercase', letterSpacing: 1, textAlign: 'right' }}>
-              Tunch
+            <Typography sx={{ flex: 1, fontSize: 14, fontWeight: 700, color: GOLD_PRIMARY, textAlign: 'right' }}>
+              {formatTwoDecimals(item.TouchValue)}%
             </Typography>
           </Box>
+        ))}
 
-          {/* Item Rows */}
-          {itemsToPrint.map((item, idx) => (
-            <Box key={idx} sx={{ 
-              display: 'flex', alignItems: 'center', px: 0.8, py: 0.7,
-              borderBottom: idx < itemsToPrint.length - 1 ? '1px dashed #efe0c0' : 'none',
-              '&:hover': { bgcolor: 'rgba(183,134,41,0.04)' },
-            }}>
-              <Typography sx={{ flex: 2, fontSize: 11.5, fontWeight: 500, color: '#444' }}>
-                {item.SampleType}
-              </Typography>
-              <Typography sx={{ flex: 1, fontSize: 11.5, color: '#666', textAlign: 'right' }}>
-                {formatWeight(item.SampleWeight)}g
-              </Typography>
-              <Box sx={{ 
-                flex: 1, textAlign: 'right',
-              }}>
-                <Typography component="span" sx={{ 
-                  fontSize: 12, fontWeight: 800, 
-                  color: '#b78629',
-                  bgcolor: '#faf0d6', px: 0.6, py: 0.15, borderRadius: 0.8,
-                }}>
-                  {formatTwoDecimals(item.TouchValue)}%
-                </Typography>
-              </Box>
-            </Box>
-          ))}
-        </Box>
+        {/* Divider */}
+        <Box sx={{ borderBottom: '1px solid #e6d5a8', mt: 1.5, mb: 1.5 }} />
 
         {/* Remark */}
         {entry.Remark && (
-          <Box sx={{ 
-            bgcolor: '#fff8e8', borderRadius: 1.5, px: 1.2, py: 0.7, mb: 1,
-            borderLeft: '3px solid #d4a94a',
-          }}>
-            <Typography sx={{ fontSize: 10, color: '#888', fontWeight: 600, mb: 0.2 }}>
+          <Box sx={{ mb: 1.5 }}>
+            <Typography sx={{ fontSize: 12, color: '#999', fontWeight: 600, mb: 0.3 }}>
               REMARK
             </Typography>
-            <Typography sx={{ fontSize: 11, color: '#555', fontStyle: 'italic' }}>
+            <Typography sx={{ fontSize: 13, color: '#444' }}>
               {entry.Remark}
             </Typography>
           </Box>
         )}
 
         {/* Footer */}
-        <Box sx={{ 
-          textAlign: 'center', pt: 1, mt: 0.5,
-          borderTop: '1.5px dashed #ddd',
-        }}>
-          <Typography sx={{ fontSize: 8, color: '#bbb', mb: 0.5 }}>
+        <Box sx={{ textAlign: 'center', pt: 1, borderTop: '1px dashed #ddd' }}>
+          <Typography sx={{ fontSize: 11, color: '#aaa', mb: 1 }}>
             Note: Deviation in result may be ± 0.20%
           </Typography>
-          <Typography sx={{ 
-            fontSize: 12, fontWeight: 700,
-            background: 'linear-gradient(90deg, #c9982e, #8b6914)',
-            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-          }}>
+          <Typography sx={{ fontSize: 14, fontWeight: 700, color: GOLD_PRIMARY }}>
             Thank you! Visit Again 🙏
           </Typography>
-          <Typography sx={{ fontSize: 8.5, color: '#bbb', mt: 0.3 }}>
+          <Typography sx={{ fontSize: 12, color: '#888', mt: 0.5 }}>
             📞 9075516373
           </Typography>
         </Box>
       </Box>
 
-      {/* Bottom Gold Bar */}
-      <Box sx={{ 
-        height: 6, 
-        background: 'linear-gradient(90deg, #c9982e, #e6b84d, #c9982e)' 
-      }} />
+      {/* Gold Bottom Bar */}
+      <Box sx={{ height: 5, bgcolor: GOLD_PRIMARY }} />
     </Box>
   );
 }
