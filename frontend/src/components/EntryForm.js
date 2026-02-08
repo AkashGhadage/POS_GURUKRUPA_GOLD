@@ -224,7 +224,7 @@ export default function EntryForm({ onSuccess }) {
               value={form.SampleWeight} 
               onChange={(e) => setForm({...form, SampleWeight: validateWeight(e.target.value)})}
               placeholder="0.000"
-              helperText="Max 3 decimals"
+              helperText=""
             />
             <Button variant="contained" onClick={handleAdd} sx={{ minWidth: '60px', bgcolor: '#B78629' }}>
               <AddIcon />

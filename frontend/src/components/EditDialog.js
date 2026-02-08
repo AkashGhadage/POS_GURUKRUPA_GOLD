@@ -167,7 +167,7 @@ export default function EditDialog({ open, onClose, entry, onSave, loading }) {
                       size="small"
                       sx={{ width: 120 }}
                       placeholder="0.00"
-                      helperText="Max 2 decimals"
+                      helperText
                     />
                   </Box>
                 </Paper>
