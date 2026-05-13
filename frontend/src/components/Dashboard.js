@@ -76,7 +76,7 @@ export default function Dashboard({ refreshFlag }) {
       <Paper elevation={2} sx={{ p: 1.5, mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1 }}>
         <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap" useFlexGap>
           <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 700 }}>Today:</Typography>
-          <Chip label={`Entries: ${summary?.today?.entries ?? '—'}`} color="primary" variant="outlined" size="small" />
+          <Chip label={`Tunch: ${summary?.today?.entries ?? '—'}`} color="primary" variant="outlined" size="small" />
           <Chip label={`Customers: ${summary?.today?.customers ?? '—'}`} color="secondary" variant="outlined" size="small" />
           <Chip label={`Weight: ${summary?.today?.weight ?? '—'} gm`} color="success" variant="outlined" size="small" />
           {summary?.avg_test_min > 0 && (
