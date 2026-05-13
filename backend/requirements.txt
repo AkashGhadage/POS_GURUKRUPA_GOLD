@@ -28,7 +28,9 @@ typing_extensions==4.15.0
 # Extra tools
 email-validator==2.3.0
 Jinja2==3.1.6
+openpyxl>=3.1.0
 MarkupSafe==3.0.3
+SpeechRecognition>=3.10.0
 
 # CLI and helpers (keep if you use fastapi-cli, rich output, etc.)
 click==8.3.0
