@@ -62,31 +62,32 @@ USB_PRINTER_ARGS = {
 
 # ── Image rendering configuration ─────────────────────────────────────────────
 # Change PAPER_WIDTH_PX to 576 if you use 80 mm paper.
-PAPER_WIDTH_PX = 384   # pixels wide  (58 mm × 8 dots/mm = 384 px)
-PADDING_X      = 8     # left & right inner margin in pixels
-FONT_SIZE       = 20   # body text
-FONT_SIZE_SMALL = 16   # receipt no / date-time line
-FONT_SIZE_TITLE = 36   # "TUNCH RECEIPT" heading
-LINE_GAP       = 6     # extra vertical padding below each text line (pixels)
+PAPER_WIDTH_PX = 576   # pixels wide  (80 mm × 7.2 dots/mm = 576 px)
+PADDING_X      = 10    # left & right inner margin in pixels
+FONT_SIZE       = 30   # body text
+FONT_SIZE_SMALL = 25   # receipt no / date-time line
+FONT_SIZE_TITLE = 24   # "TUNCH RECEIPT" heading
+FONT_SIZE_TUNCH = 42   # tunch value only (extra prominent)
+LINE_GAP       = 7     # extra vertical padding below each text line (pixels)
 SEP_THICKNESS  = 2     # separator line thickness (pixels)
-SEP_PADDING    = 4     # vertical space above & below the separator line
-LABEL_COL_PX   = 100   # pixels reserved for the label column in detail rows
-COLON_GAP_PX  = 6     # space between colon and value
-BOTTOM_FEED_PX = 16    # blank pixels printed below the last line before cut
+SEP_PADDING    = 5     # vertical space above & below the separator line
+LABEL_COL_PX   = 122  # pixels reserved for the label column in detail rows
+COLON_GAP_PX  = 8     # space between colon and value
+BOTTOM_FEED_PX = 2    # blank pixels printed below the last line before cut
 
 # TrueType font search paths – first existing file is used.
 # Add more paths here for Linux / Docker environments if needed.
 _FONT_PATHS = {
     "regular": [
-        "C:/Windows/Fonts/arial.ttf",
         "C:/Windows/Fonts/calibri.ttf",
+        "C:/Windows/Fonts/arial.ttf",
         "C:/Windows/Fonts/verdana.ttf",
         "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
         "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
     ],
     "bold": [
-        "C:/Windows/Fonts/arialbd.ttf",
         "C:/Windows/Fonts/calibrib.ttf",
+        "C:/Windows/Fonts/arialbd.ttf",
         "C:/Windows/Fonts/verdanab.ttf",
         "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
         "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
@@ -148,7 +149,16 @@ def _seg_text(
 ) -> Image.Image:
     """Single line of text, horizontally aligned."""
     inner_w = paper_width - 2 * padding_x
-    tw, th = _text_wh(font, text)
+    tw, _ = _text_wh(font, text)
+    # Use actual bbox so capital-only text like "TUNCH RECEIPT" doesn't get
+    # extra blank space from the unused descender area.
+    try:
+        bbox = font.getbbox(text)
+        th = bbox[3] - bbox[1]
+        y_offset = -bbox[1]   # shift up to remove top bearing gap
+    except Exception:
+        _, th = _text_wh(font, text)
+        y_offset = 0
     img = Image.new("1", (paper_width, th + LINE_GAP), 1)
     draw = ImageDraw.Draw(img)
 
@@ -159,7 +169,7 @@ def _seg_text(
     else:
         x = padding_x
 
-    draw.text((x, 0), text, font=font, fill=0)
+    draw.text((x, y_offset), text, font=font, fill=0)
     return img
 
 
@@ -197,6 +207,7 @@ def _seg_label_value(
     padding_x: int,
     bold_value: bool = False,
     label_col_px: int = LABEL_COL_PX,
+    font_value_override: ImageFont.FreeTypeFont = None,
 ) -> Image.Image:
     """
     Label-value row with automatic line-wrapping for long values.
@@ -205,13 +216,22 @@ def _seg_label_value(
         [padding_x] [<-- label_col_px -->] [value ...]
     """
     inner_w   = paper_width - 2 * padding_x
-    value_w   = inner_w - label_col_px
-    font_v    = font_bold if bold_value else font_normal
+    # value_w must account for COLON_GAP_PX so text never overflows the paper
+    value_w   = inner_w - label_col_px - COLON_GAP_PX
+    font_v    = font_value_override if font_value_override is not None else (font_bold if bold_value else font_normal)
 
-    # Estimate characters per line for the value column
-    avg_cw, char_h = _text_wh(font_v, "0")
+    # Estimate characters per line for the value column.
+    # Use getmetrics() (ascent + descent) for line height so descender letters
+    # like 'g', 'y', 'p' are never clipped at the bottom.
+    avg_cw, _ = _text_wh(font_v, "0")
     chars_per_line = max(1, value_w // max(1, avg_cw))
     value_lines = textwrap.wrap(str(value), width=chars_per_line) or [""]
+
+    try:
+        ascent, descent = font_v.getmetrics()
+        char_h = ascent + descent
+    except Exception:
+        _, char_h = _text_wh(font_v, "Agypq")
 
     line_h = char_h + LINE_GAP
     img_h  = line_h * len(value_lines)
@@ -258,6 +278,8 @@ def _build_receipt_image(entry: dict) -> Image.Image:
     font_n     = _load_font("regular", FONT_SIZE)
     font_b     = _load_font("bold",    FONT_SIZE)
     font_s     = _load_font("regular", FONT_SIZE_SMALL)
+    font_sb    = _load_font("bold",    FONT_SIZE_SMALL)
+    font_tunch = _load_font("bold",    FONT_SIZE_TUNCH)
     font_title = _load_font("bold",    FONT_SIZE_TITLE)
 
     # ── Parse entry fields ─────────────────────────────────────────────────────
@@ -285,19 +307,19 @@ def _build_receipt_image(entry: dict) -> Image.Image:
     # ── Top separator
     segs.append(_seg_separator(pw))
 
-    # ── Title
-    segs.append(_seg_text("TUNCH RECEIPT", font_title, pw, px, align="center"))
+    # ── Title (regular weight, not bold)
+    segs.append(_seg_text("TUNCH RECEIPT", font_n, pw, px, align="center"))
 
     # ── Separator
     segs.append(_seg_separator(pw))
 
     # ── Receipt No (left)  |  Date & Time (right)
-    # Use a smaller font so both receipt no + full date+time fit on one line.
+    # Use a smaller bold font so both receipt no + full date+time fit on one line.
     left_col  = f"Receipt No: {transaction_id}" if transaction_id else ""
     dt_parts  = " ".join(x for x in [date_str, time_str] if x)
     right_col = f"Date: {dt_parts}" if dt_parts else ""
     if left_col or right_col:
-        segs.append(_seg_two_cols(left_col, right_col, font_s, pw, px))
+        segs.append(_seg_two_cols(left_col, right_col, font_sb, pw, px))
 
     # ── Separator
     segs.append(_seg_separator(pw))
@@ -316,6 +338,7 @@ def _build_receipt_image(entry: dict) -> Image.Image:
             "Tunch", touch_str + " %",
             font_n, font_b, pw, px,
             bold_value=True,
+            font_value_override=font_tunch,
         ))
     if remark:
         segs.append(_seg_label_value("Remark", remark, font_n, font_b, pw, px))
@@ -326,7 +349,7 @@ def _build_receipt_image(entry: dict) -> Image.Image:
     # ── Footer
     segs.append(_seg_text(
         "Note: Deviation in result may be \u00b1 0.20%",
-        font_n, pw, px, align="center",
+        font_s, pw, px, align="center",
     ))
     segs.append(_seg_text(
         "Thank you...Visit Again..!",
@@ -432,8 +455,11 @@ def do_print_receipt(entry: dict, copies: int):
 
                 # ── Receipt body rendered as bitmap image
                 # No printer character ROM is used – zeros will be clean.
-                printer.set(align="left")
+                printer.set(align="center")
                 printer.image(receipt_img)
+                # GS V 0 — full cut with NO automatic paper feed beforehand.
+                # Using raw command instead of which adds feed lines.
+                # printer._raw(b'\x1d\x56\x00')
                 printer.cut()
 
         return {
