@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import EntryForm from './components/EntryForm';
 import EntryTable from './components/EntryTable';
 import HeroTitle from './components/HeroTitle';
+import Dashboard from './components/Dashboard';
 import {
   Box, CssBaseline, useMediaQuery, Dialog, DialogContent, DialogTitle, DialogActions, Button, Snackbar
 } from '@mui/material';
@@ -54,6 +55,7 @@ export default function App() {
           transition: 'background 0.38s',
         }}
       >
+        <Dashboard refreshFlag={refreshFlag} />
         <EntryTable
           refreshFlag={refreshFlag}
           onCreateClick={() => setFormOpen(true)}
