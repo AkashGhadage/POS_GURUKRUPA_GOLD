@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request, HTTPException, Body
 from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import SQLModel, Session, create_engine, select
 from typing import Optional
-from utils.print_receipt import do_print_receipt
+from utils.print_receipt_image import do_print_receipt
 from models import GoldTestingTransactions
 from datetime import datetime
 from pathlib import Path
