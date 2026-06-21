@@ -21,7 +21,7 @@ import MicOffIcon from '@mui/icons-material/MicOff';
 import ClearIcon from '@mui/icons-material/Clear';
 
 const sampleTypeOptions = [
-  'GOLD SAMPLE','SILVER SAMPLE',"GOLD ORNAMENT","SILVER ORNAMENT",'Reni','Rava', 'Chas','Coin', 'Bar','Ring', 'Chain','Bangle', 'Pendant', 'Other'
+  'GOLD SAMPLE','GOLD SKIN TEST','SILVER SAMPLE','SILVER SKIN TEST',"GOLD ORNAMENT","SILVER ORNAMENT",'Reni','Rava', 'Chas','Coin', 'Bar','Ring', 'Chain','Bangle', 'Pendant', 'Other'
 ];
 const testingMethodOptions = ['With Print', 'Without Print'];
 
